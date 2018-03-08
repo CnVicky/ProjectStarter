@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<codeSmith xmlns="http://www.codesmithtools.com/schema/csp.xsd">
+  <variables>
+    <add key="ConnectionString" value="server=127.0.0.1;user id=root;Password=aabbcc;database=farm;persist security info=False" />
+  </variables>
+  <propertySets>
+    <propertySet name="DTO" template="DataModel.cst">
+      <property name="SourceDatabase">
+        <connectionString>$(ConnectionString)</connectionString>
+        <providerType>SchemaExplorer.MySQLSchemaProvider,SchemaExplorer.MySQLSchemaProvider</providerType>
+      </property>
+    </propertySet>
+  </propertySets>
+</codeSmith>

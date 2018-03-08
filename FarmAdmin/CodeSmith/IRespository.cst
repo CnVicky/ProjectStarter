@@ -1,0 +1,32 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Description="An example on creating a class with properties from a database table." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="CodeSmith.Core.Extensions" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="DataSource" Optional="False" %>
+
+<script runat="template">
+public string GetNullString(SchemaExplorer.ColumnSchema column)
+{
+    if (column.AllowDBNull && column.SystemType.IsValueType)
+    {
+        return "?";
+    }
+    return string.Empty;
+}
+private string OneToUpper(string str)
+{
+    str = str.Substring(0,1).ToUpper()+str.Substring(1);
+	while(str.IndexOf('_')>-1) {
+		str = str.Substring(0,str.IndexOf('_')) + str.Substring(str.IndexOf('_')+1,1).ToUpper() + str.Substring(str.IndexOf('_')+2);
+	}
+	return str;
+}
+</script>
+
+using Fram.Domain;
+namespace Farm.Repositories
+{
+    public interface I<%= OneToUpper(SourceTable.Name) %>Repository : IRepository<DTO<%= OneToUpper(SourceTable.Name) %>>
+    {
+    }
+}

@@ -1,0 +1,53 @@
+﻿<%@ Template Language="C#" TargetLanguage="Text" Description="数据模型" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Property Name="SourceDatabase" Type="SchemaExplorer.DatabaseSchema"  Category="Context" Description="Database containing the tables." %>
+
+<%@ Register Name="DTO" Template="DTO.cst" MergeProperties="false"  %>
+
+<%@ Register Name="IRepository" Template="IRespository.cst" MergeProperties="false"  %>
+
+<%@ Register Name="Repository" Template="Respository.cst" MergeProperties="false"  %>
+
+<%@ Register Name="IService" Template="IService.cst" MergeProperties="false"  %>
+
+<%@ Register Name="Service" Template="Service.cst" MergeProperties="false"  %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="CodeSmith.Core.Extensions" %>
+
+<script runat="template">
+private string OneToUpper(string str)
+{
+    str = str.Substring(0,1).ToUpper()+str.Substring(1);
+	while(str.IndexOf('_')>-1) {
+		str = str.Substring(0,str.IndexOf('_')) + str.Substring(str.IndexOf('_')+1,1).ToUpper() + str.Substring(str.IndexOf('_')+2);
+	}
+	return str;
+}
+</script>
+<% for (int i = 0; i < SourceDatabase.Tables.Count; i++) { %>
+
+   <%  string name= OneToUpper(SourceDatabase.Tables[i].Name); %>
+   <%  string filename= @"../Fram.Domain/DTO"+name+".cs"; %>
+     // instantiate the sub-template
+    <%  DTO dto = this.Create<DTO>();%>
+    <%  dto.SourceTable= SourceDatabase.Tables[i]; %>
+    <%  dto.RenderToFile(filename,true); %>
+	
+	<% IRepository irepository = this.Create<IRepository>(); %>
+	<%  irepository.SourceTable= SourceDatabase.Tables[i]; %>
+    <%  irepository.RenderToFile(@"../Farm.Repositories/"+name+"/I"+name+"Repository.cs",true); %>
+	<% Repository repository = this.Create<Repository>(); %>
+	<%  repository.SourceTable= SourceDatabase.Tables[i]; %>
+    <%  repository.RenderToFile(@"../Farm.Repositories/"+name+"/"+name+"Repository.cs",true); %>
+	
+	<% IService IService = this.Create<IService>(); %>
+	<%  IService.SourceTable= SourceDatabase.Tables[i]; %>
+    <%  IService.RenderToFile(@"../Farm.Services/"+name+"/I"+name+"Service.cs",true); %>
+	<% Service Service = this.Create<Service>(); %>
+	<%  Service.SourceTable= SourceDatabase.Tables[i]; %>
+    <%  Service.RenderToFile(@"../Farm.Services/"+name+"/"+name+"Service.cs",true); %>
+	
+	
+<% } %>
